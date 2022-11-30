@@ -23,6 +23,12 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_service_requests(request):
-    user_id = request.user.id
-    request_list = ServiceRequest.objects.filter(user_id=user_id)
-    return Response(UserServiceRequestSerializer(request_list, many=True).data)
+    if request.user.is_superuser:
+        request_list = ServiceRequest.objects.all()
+        return Response(ServiceRequestSerializer(request_list, many=True).data)
+    else:
+        user_id = request.user.id
+        request_list = ServiceRequest.objects.filter(user_id=user_id)
+        return Response(UserServiceRequestSerializer(request_list, many=True).data)
+
+
